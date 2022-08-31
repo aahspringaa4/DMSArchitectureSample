@@ -25,31 +25,6 @@ class AuthorizationInterceptor(
         if (path == "/users" && request.method() == "POST") return chain.proceed(request)
         if (path.contains("/users/accounts/")) return chain.proceed(request)
 
-        val expiredAt = authDataStorage.fetchExpiredAt()
-        val currentTime = LocalDateTime.now(ZoneId.systemDefault())
-
-        if (expiredAt.isBefore(currentTime)) {
-            val client = OkHttpClient()
-            val refreshToken = authDataStorage.fetchRefreshToken()
-
-            val tokenRefreshRequest = Request.Builder()
-                .url("http://androidonetop/auth")
-                .patch(RequestBody.create(MediaType.parse("application/json"), ""))
-                .addHeader("refresh_token", "Bearer $refreshToken")
-                .build()
-            val response = client.newCall(tokenRefreshRequest).execute()
-
-            if (response.isSuccessful) {
-                val token = Gson().fromJson(
-                    response.body()!!.toString(),
-                    TokenRefreshResponse::class.java
-                )
-                authDataStorage.setAccessToken(token.accessToken)
-                authDataStorage.setRefreshToken(token.refreshToken)
-                authDataStorage.setExpiredAt(token.expiredAt)
-            } else throw NeedLoginException()
-        }
-
         val accessToken = authDataStorage.fetchAccessToken()
         return chain.proceed(
             request.newBuilder().addHeader(
@@ -61,7 +36,6 @@ class AuthorizationInterceptor(
 
     data class TokenRefreshResponse(
         @SerializedName("access_token") val accessToken: String,
-        @SerializedName("refresh_token") val refreshToken: String,
-        @SerializedName("expired_at") val expiredAt: String,
+        @SerializedName("refresh_token") val refreshToken: String
     )
 }
