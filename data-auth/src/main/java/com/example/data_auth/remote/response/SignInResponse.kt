@@ -4,7 +4,7 @@ import android.text.BoringLayout
 import com.google.gson.annotations.SerializedName
 
 data class SignInResponse(
-    @SerializedName("meal") val meal: Boolean,
-    @SerializedName("point") val point: Boolean,
-    @SerializedName("notice") val notice: Boolean
+    @field:SerializedName("meal") val meal: Boolean,
+    @field:SerializedName("point") val point: Boolean,
+    @field:SerializedName("notice") val notice: Boolean
 )
