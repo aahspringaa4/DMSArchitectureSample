@@ -1,5 +1,6 @@
 package com.example.database.storage
 
+import com.example.database.param.LocalUserViewParam
 import java.time.LocalDateTime
 
 interface AuthDataStorage {
@@ -12,6 +13,6 @@ interface AuthDataStorage {
     fun fetchRefreshToken(): String
     fun clearRefreshToken()
 
-    fun setExpiredAt(localDateTime: String)
-    fun fetchExpiredAt(): LocalDateTime
+    fun setViewBoolean(localUserViewParam: LocalUserViewParam)
+    fun fetchViewBoolean()
 }
